@@ -7,6 +7,7 @@ import org.json4s.JsonDSL._
 
 import org.apache.spark.SparkContext
 import org.apache.spark.mllib.linalg.Matrices
+import org.apache.spark.mllib.linalg.Matrix
 import org.apache.spark.mllib.linalg.distributed.BlockMatrix
 
 import mllib.perf.PerfTest
@@ -35,9 +36,10 @@ class BlockMatrixMultTest(sc: SparkContext) extends PerfTest {
     val numPartitions = intOptionValue(NUM_PARTITIONS)
 
     val random = new Random(seed)
-
     A = randn(m, k, blockSize, numPartitions, seed ^ random.nextLong())
+    val matrixA:Matrix = A.toLocalMatrix()
     B = randn(k, n, blockSize, numPartitions, seed ^ random.nextLong())
+    val matrixB:Matrix = B.toLocalMatrix()
   }
 
   def randn(
@@ -46,9 +48,10 @@ class BlockMatrixMultTest(sc: SparkContext) extends PerfTest {
       blockSize: Int,
       numPartitions: Int,
       seed: Long): BlockMatrix = {
-    val numRowBlocks = math.ceil(m / blockSize).toInt
-    val numColBlocks = math.ceil(n / blockSize).toInt
+    val numRowBlocks = math.ceil((m+0.0) / blockSize).toInt
+    val numColBlocks = math.ceil((n+0.0) / blockSize).toInt
     val sqrtParts = math.ceil(math.sqrt(numPartitions)).toInt
+    println("[ChangInfo] sqrtParts = " + sqrtParts)
     val rowBlockIds = sc.parallelize(0 until numRowBlocks, sqrtParts)
     val colBlockIds = sc.parallelize(0 until numColBlocks, sqrtParts)
     val blockIds = rowBlockIds.cartesian(colBlockIds)
@@ -60,13 +63,13 @@ class BlockMatrixMultTest(sc: SparkContext) extends PerfTest {
         ((rowBlockId, colBlockId), Matrices.randn(mi, ni, random))
       }
     }.cache()
-    logInfo(s"Generated ${blocks.count()} blocks.")
     new BlockMatrix(blocks, blockSize, blockSize, m, n)
   }
 
   override def run(): JValue = {
     val start = System.currentTimeMillis()
     val C = A.multiply(B)
+    val matrix:Matrix = C.toLocalMatrix()
     C.blocks.count()
     val duration = (System.currentTimeMillis() - start) / 1e3
     "time" -> duration

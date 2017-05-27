@@ -26,34 +26,34 @@ object TestRunner {
 
       // Unfortunate copy of code because there are Perf Tests in both projects and the compiler doesn't like it
       val test: PerfTest = testName match {
-        case "glm-regression" => new GLMRegressionTest(sc)
-        case "glm-classification" => new GLMClassificationTest(sc)
-        case "naive-bayes" => new NaiveBayesTest(sc)
+        //case "glm-regression" => new GLMRegressionTest(sc)
+        //case "glm-classification" => new GLMClassificationTest(sc)
+        //case "naive-bayes" => new NaiveBayesTest(sc)
         // recommendation
         case "als" => new ALSTest(sc)
         // clustering
-        case "gmm" => new GaussianMixtureTest(sc)
-        case "kmeans" => new KMeansTest(sc)
-        case "lda" => new LDATest(sc)
-        case "pic" => new PICTest(sc)
+        //case "gmm" => new GaussianMixtureTest(sc)
+        //case "kmeans" => new KMeansTest(sc)
+        //case "lda" => new LDATest(sc)
+        //case "pic" => new PICTest(sc)
         // trees
-        case "decision-tree" => new DecisionTreeTest(sc)
+        //case "decision-tree" => new DecisionTreeTest(sc)
         // linalg
-        case "svd" => new SVDTest(sc)
-        case "pca" => new PCATest(sc)
+        //case "svd" => new SVDTest(sc)
+        //case "pca" => new PCATest(sc)
         case "block-matrix-mult" => new BlockMatrixMultTest(sc)
         // stats
-        case "summary-statistics" => new ColumnSummaryStatisticsTest(sc)
-        case "pearson" => new PearsonCorrelationTest(sc)
-        case "spearman" => new SpearmanCorrelationTest(sc)
-        case "chi-sq-feature" => new ChiSquaredFeatureTest(sc)
-        case "chi-sq-gof" => new ChiSquaredGoFTest(sc)
-        case "chi-sq-mat" => new ChiSquaredMatTest(sc)
+        //case "summary-statistics" => new ColumnSummaryStatisticsTest(sc)
+        //case "pearson" => new PearsonCorrelationTest(sc)
+        //case "spearman" => new SpearmanCorrelationTest(sc)
+        //case "chi-sq-feature" => new ChiSquaredFeatureTest(sc)
+        //case "chi-sq-gof" => new ChiSquaredGoFTest(sc)
+        //case "chi-sq-mat" => new ChiSquaredMatTest(sc)
         // feature
-        case "word2vec" => new Word2VecTest(sc)
+        //case "word2vec" => new Word2VecTest(sc)
         // frequent pattern mining
-        case "fp-growth" => new FPGrowthTest(sc)
-        case "prefix-span" => new PrefixSpanTest(sc)
+        //case "fp-growth" => new FPGrowthTest(sc)
+        //case "prefix-span" => new PrefixSpanTest(sc)
       }
       test.initialize(testName, perfTestArgs)
       // Generate a new dataset for each test
@@ -65,6 +65,7 @@ object TestRunner {
       var testOptions: JValue = test.getOptions
       val results: Seq[JValue] = (1 to numTrials).map { i =>
         test.createInputData(rand.nextLong())
+	println("[ChangInfo] Cycle: " + i)
         val res: JValue = test.run()
         System.gc()
         Thread.sleep(interTrialWait)

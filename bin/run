@@ -1,3 +1,4 @@
 #!/usr/bin/env bash
 export PYTHONPATH="$(dirname "$0")/../lib/:$HOME/lib/site-python:$PYTHONPATH"
+#export LD_LIBRARY_PATH=/home/lab/SR-5.0.3-Release/Samples/Hello_AAL_Service/SW:/home/lab/503prefix_dir/lib:/home/lab/snappy-LZ4/SW/Ubuntu-14.04-x64/lib:/home/lab/SR-5.0.3-Release/Samples/Hello_AAL_Service/SW:/home/lab/sgemm-ml-demo/lib:/usr/local/lib
 /usr/bin/env python "$(dirname "$0")/../lib/sparkperf/main.py" "$@"

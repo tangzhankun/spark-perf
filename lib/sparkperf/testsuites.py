@@ -126,7 +126,13 @@ class JVMPerfTestSuite(PerfTestSuite):
     @classmethod
     def get_spark_submit_cmd(cls, cluster, config, main_class_or_script, opt_list, stdout_filename,
                              stderr_filename):
+
+        classpath = " --driver-library-path %s/lib/:/usr/local/lib --num-executors %s -v --conf spark.driver.maxResultSize=4g" % (config.SPARK_HOME_DIR, config.ENV_EXECUTOR_NUM)
+        classpath += " --conf spark.executorEnv.DAALROOT=%s --conf spark.executorEnv.CPATH=%s --conf spark.executorEnv.LIBRARY_PATH=%s --conf spark.executorEnv.LD_LIBRARY_PATH=%s --conf spark.executorEnv.DAAL_MODE=%s --conf spark.executor.cores=%s " % (config.ENV_DAALROOT, config.ENV_CPATH, config.ENV_LIBRARY_PATH, config.ENV_LD_LIBRARY_PATH, config.ENV_DAAL_MODE, config.ENV_EXECUTOR_VCORE)
+        #classpath += " --conf spark.executor.extraJavaOptions=\"-Djava.library.path=%s:%s:%s:%s\" " % (config.ENV_DAALROOT, config.ENV_CPATH, config.ENV_LIBRARY_PATH, config.ENV_LD_LIBRARY_PATH)
+        classpath = classpath + "--conf spark.executor.fpga.type=MCP --conf spark.executor.fpga.ip=60d65a0f-db0d-4390-ba94-67390d25gghh:1 "
         spark_submit = "%s/bin/spark-submit" % cluster.spark_home
+        spark_submit += classpath
         cmd = "%s --class %s --master %s --driver-memory %s %s %s 1>> %s 2>> %s" % (
             spark_submit, main_class_or_script, config.SPARK_CLUSTER_URL,
             config.SPARK_DRIVER_MEMORY, cls.test_jar_path, " ".join(opt_list),

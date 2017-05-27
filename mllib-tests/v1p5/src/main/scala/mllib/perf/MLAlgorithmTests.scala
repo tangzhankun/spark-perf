@@ -533,7 +533,7 @@ class ALSTest(sc: SparkContext) extends RecommendationTests(sc) {
     val implicitRatings: Boolean = booleanOptionValue(IMPLICIT)
 
     new ALS().setIterations(numIterations).setRank(rank).setSeed(seed).setLambda(regParam)
-      .setBlocks(rdd.partitions.length).setImplicitPrefs(implicitRatings).run(rdd)
+      .setBlocks(rdd.partitions.length).setImplicitPrefs(implicitRatings).setNonnegative(true).run(rdd)
   }
 }
 
