@@ -8,4 +8,3 @@ trap_ctrlc () {
 }
 trap "trap_ctrlc" 2
 echo "hahahaha"
-sleep 80
