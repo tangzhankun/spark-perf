@@ -1,4 +1,20 @@
 #!/bin/bash
+declare program="./bin/run"
+declare current_pid=-1
+declare total_vcore=24
+declare total_mem=120
+export ENV_DRIVER_MEM="60g"
+source /home/lab/spark-DAAL/DAAL_setup.sh
+declare -a a_SPARK_HOME=("/home/lab/spark-DAAL/spark-daal-dist/spark-1.6.3-bin-custom-spark" "/home/lab/spark-DAAL/spark-original/spark-1.6.3-bin-spark-vanilla")
+declare -a a_SPARKPERF_M=("1024" "4096" "8192" "8192" "8192" "4096")
+declare -a a_SPARKPERF_K=("10240" "10240" "10240" "16384" "65535" "32764")
+declare -a a_SPARKPERF_N=("10240" "10240" "10240" "16384" "16384" "32764")
+declare -a a_SPARKPERF_BLOCK_SIZE=("1024" "2048" "4096")
+declare -a a_ENV_EXECUTOR_NUM=("1" "4" "8" "16")
+declare -a a_ENV_DAAL_MODE=("0" "1" "2")
+
+echo "0: cpu only, 1: fpga balanced, 2: fpga maximum"
+
 # this function is called when Ctrl-C is sent
 trap_ctrlc () {
     # perform cleanup here
@@ -11,6 +27,7 @@ trap_ctrlc () {
     # if omitted, shell script will continue execution
     exit 2
 }
+
 runTest () {
 arraylength=${#a_SPARKPERF_M[@]}
 for (( p=1; p<${arraylength}+1; p++ ));
@@ -28,9 +45,11 @@ do
   echo "----------N: $SPARKPERF_N"
   echo "----------EXECUTOR_MEM: $ENV_EXECUTOR_MEM"
   echo "----------EXECUTOR_VCORE: $ENV_EXECUTOR_VCORE"
-  declare logfile="zhankun_results/DAAL_MODE:$DAAL_MODE-SPARKPERF_EXECUTOR_NUM:$SPARKPERF_EXECUTOR_NUM-SPARKPERF_BLOCK_SIZE:$SPARKPERF_BLOCK_SIZE-M:$SPARKPERF_M-K:$SPARKPERF_K-N:$SPARKPERF_N-EXECUTOR_MEM:$ENV_EXECUTOR_MEM-EXECUTOR_VCORE:$ENV_EXECUTOR_VCORE"
-  touch $logfile
-  ./test_script.sh > "$logfile" 2>&1 &
+  declare timestamp=`date +%s`
+  declare prefix="zhankun_results/MODE-$DAAL_MODE-EXECUTOR_NUM-$SPARKPERF_EXECUTOR_NUM-B_SIZE-$SPARKPERF_BLOCK_SIZE-M-$SPARKPERF_M-K-$SPARKPERF_K-N-$SPARKPERF_N-EXECUTOR_MEM-$ENV_EXECUTOR_MEM-EXECUTOR_VCORE-$ENV_EXECUTOR_VCORE-"
+  declare filename=$prefix$timestamp
+  touch $filename
+  $program > "$filename" 2>&1 &
   current_pid=$!
   echo "waiting current pid: $current_pid"
   wait $current_pid
@@ -39,20 +58,6 @@ done
 }
 
 trap "trap_ctrlc" 2
-declare current_pid=-1
-declare total_vcore=24
-declare total_mem=180
-export ENV_DRIVER_MEM="128g"
-source /home/lab/spark-DAAL/DAAL_setup.sh
-declare -a a_SPARK_HOME=("/home/lab/spark-DAAL/spark-daal-dist/spark-1.6.3-bin-custom-spark" "/home/lab/spark-DAAL/spark-original/spark-1.6.3-bin-spark-vanilla")
-declare -a a_SPARKPERF_M=("1024" "1024" "1024")
-declare -a a_SPARKPERF_K=("10240" "10240" "10240")
-declare -a a_SPARKPERF_N=("10240" "10240" "10240")
-declare -a a_SPARKPERF_BLOCK_SIZE=("256" "512" "128")
-declare -a a_ENV_EXECUTOR_NUM=("1" "4" "8" "16")
-declare -a a_ENV_DAAL_MODE=("0" "1" "2")
-
-echo "0: cpu only, 1: fpga balanced, 2: fpga maximum"
 
 for i in "${a_SPARK_HOME[@]}"
 do
