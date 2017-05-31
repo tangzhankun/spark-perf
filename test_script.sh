@@ -6,5 +6,7 @@ trap_ctrlc () {
     # if omitted, shell script will continue execution
     exit 2
 }
+
 trap "trap_ctrlc" 2
+sleep 80
 echo "hahahaha"
