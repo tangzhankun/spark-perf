@@ -26,6 +26,7 @@ ENV_EXECUTOR_NUM = os.environ.get('SPARKPERF_EXECUTOR_NUM', "5")
 ENV_EXECUTOR_VCORE = os.environ.get('SPARKPERF_EXECUTOR_VCORE', "1")
 ENV_EXECUTOR_MEM = os.environ.get('SPARKPERF_EXECUTOR_MEM', "60g")
 ENV_DRIVER_MEM = os.environ.get('SPARKPERF_DRIVER_MEM', "128g")
+ENV_NUM_PARTITION = os.environ.get('SPARKPERF_EXECUTOR_PARTITION', "6")
 # 0 cpu only
 # 1 fpga balanced
 # 2 fpga maximum
@@ -407,7 +408,7 @@ if MLLIB_SPARK_VERSION >= 1.1:
 MLLIB_COMMON_OPTS = COMMON_OPTS + [
     # The number of input partitions.
     # The default setting is suitable for a 16-node m3.2xlarge EC2 cluster.
-    OptionSet("num-partitions", [128], can_scale=True),
+    OptionSet("num-partitions", [ENV_NUM_PARTITION], can_scale=False),
     # A random seed to make tests reproducable.
     OptionSet("random-seed", [5])
 ]
