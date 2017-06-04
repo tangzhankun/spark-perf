@@ -15,9 +15,14 @@ for line in fileinput.input():
     mode = items[2]
     subkey = '_'.join([version, mode])
     zxcv[subkey] = items[19].split(':')[2].split(',')[0]
+    gemmFunctionTime = items[19].split(':')[-1].rstrip()
+    subkey2 = subkey + '_gemm'
+    zxcv[subkey2] = gemmFunctionTime
     #print key, subkey, zxcv, '>', items
-print 'Matrix Size,', 'Block Size,', 'Executor Num,', 'DAAL CPU Only,', 'Vanilla CPU Only,'
+print 'Matrix Size,', 'Block Size,', 'Executor Num,', 'DAAL CPU Only(s),', 'Vanilla OpenBLAS(s),', 'DAAL gemm(ms),', 'Vanilla gemm(ms)'
 for k, v in asdf.iteritems():
     x1 = v.get('daal_0') or ''
     x2 = v.get('vanilla_0') or ''
-    print ', '.join([k[0], k[1], k[2], x1, x2])
+    x3 = v.get('daal_0_gemm') or ''
+    x4 = v.get('vanilla_0_gemm') or ''
+    print ', '.join([k[0], k[1], k[2], x1, x2, x3, x4])
