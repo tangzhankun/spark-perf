@@ -5,14 +5,14 @@ declare total_executor_vcore=22
 declare total_executor_mem=160
 export SPARKPERF_DRIVER_MEM="60g"
 source /home/lab/spark-DAAL/DAAL_setup.sh
-#declare -a a_SPARK_HOME=("/home/lab/spark-DAAL/spark-daal-dist/spark-1.6.3-bin-custom-spark")
+declare -a a_SPARK_HOME=("/home/lab/spark-DAAL/spark-daal-dist/spark-1.6.3-bin-custom-spark")
 #declare -a a_SPARK_HOME=("/home/lab/spark-DAAL/spark-original-jvm/spark-1.6.3-bin-spark-vanilla-jvm" "/home/lab/spark-DAAL/spark-daal-dist/spark-1.6.3-bin-custom-spark" "/home/lab/spark-DAAL/spark-original-openblas/spark-1.6.3-bin-spark-vanilla-openblas")
-declare -a a_SPARK_HOME=("/home/lab/spark-DAAL/spark-original-openblas/spark-1.6.3-bin-spark-vanilla-openblas")
-declare -a a_SPARKPERF_M=("512")
-declare -a a_SPARKPERF_K=("1024")
-declare -a a_SPARKPERF_N=("1024")
-declare -a a_SPARKPERF_BLOCK_SIZE=("512")
-declare -a a_ENV_EXECUTOR_NUM=("1")
+#declare -a a_SPARK_HOME=("/home/lab/spark-DAAL/spark-original-openblas/spark-1.6.3-bin-spark-vanilla-openblas")
+declare -a a_SPARKPERF_M=("2048")
+declare -a a_SPARKPERF_K=("20480")
+declare -a a_SPARKPERF_N=("20480")
+declare -a a_SPARKPERF_BLOCK_SIZE=("2048")
+declare -a a_ENV_EXECUTOR_NUM=("4")
 declare -a a_ENV_DAAL_MODE=("0")
 
 echo "0: cpu only, 1: fpga balanced, 2: fpga maximum"
@@ -38,8 +38,8 @@ do
   let executor_vcore="total_executor_vcore/SPARKPERF_EXECUTOR_NUM"
   export SPARKPERF_EXECUTOR_MEM=$executor_memory
   export SPARKPERF_EXECUTOR_VCORE=$executor_vcore
-  let executor_partition="total_executor_vcore*total_executor_vcore*4"
-  export SPARKPERF_EXECUTOR_PARTITION=4
+  let executor_partition="SPARKPERF_EXECUTOR_NUM*SPARKPERF_EXECUTOR_NUM*4"
+  export SPARKPERF_EXECUTOR_PARTITION=$executor_partition
   echo "----------M: $SPARKPERF_M"
   echo "----------K: $SPARKPERF_K"
   echo "----------N: $SPARKPERF_N"

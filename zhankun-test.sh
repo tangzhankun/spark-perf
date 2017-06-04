@@ -5,8 +5,7 @@ declare total_executor_vcore=22
 declare total_executor_mem=160
 export SPARKPERF_DRIVER_MEM="60g"
 source /home/lab/spark-DAAL/DAAL_setup.sh
-#declare -a a_SPARK_HOME=("/home/lab/spark-DAAL/spark-daal-dist/spark-1.6.3-bin-custom-spark" "/home/lab/spark-DAAL/spark-original-openblas/spark-1.6.3-bin-spark-vanilla-openblas")
-declare -a a_SPARK_HOME=("/home/lab/spark-DAAL/spark-original-openblas/spark-1.6.3-bin-spark-vanilla-openblas")
+declare -a a_SPARK_HOME=("/home/lab/spark-DAAL/spark-daal-dist/spark-1.6.3-bin-custom-spark" "/home/lab/spark-DAAL/spark-original-openblas/spark-1.6.3-bin-spark-vanilla-openblas")
 declare -a a_SPARKPERF_M=("128" "256" "320" "640" "1024" "2048")
 declare -a a_SPARKPERF_K=("512" "1024" "2048" "4096" "10240" "20480")
 declare -a a_SPARKPERF_N=("512" "1024" "2048" "4096" "10240" "20480")
@@ -55,8 +54,7 @@ done
 }
 
 trap "trap_ctrlc" 2
-#export spark_version="daal"
-export spark_version="vanilla"
+export spark_version="daal"
 for i in "${a_SPARK_HOME[@]}"
 do
    export SPARKPERF_SPARKHOME=$i
