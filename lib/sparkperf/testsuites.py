@@ -127,7 +127,7 @@ class JVMPerfTestSuite(PerfTestSuite):
     def get_spark_submit_cmd(cls, cluster, config, main_class_or_script, opt_list, stdout_filename,
                              stderr_filename):
 
-        classpath = " --driver-library-path %s/lib/:/usr/local/lib --num-executors %s -v --conf spark.driver.maxResultSize=10g" % (config.SPARK_HOME_DIR, config.ENV_EXECUTOR_NUM)
+        classpath = " --driver-library-path %s/lib/:/usr/local/lib --num-executors %s -v --conf spark.driver.maxResultSize=20g" % (config.SPARK_HOME_DIR, config.ENV_EXECUTOR_NUM)
         classpath += " --conf spark.executorEnv.DAALROOT=%s --conf spark.executorEnv.CPATH=%s --conf spark.executorEnv.LIBRARY_PATH=%s --conf spark.executorEnv.LD_LIBRARY_PATH=%s --conf spark.executorEnv.DAAL_MODE=%s --executor-cores=%s " % (config.ENV_DAALROOT, config.ENV_CPATH, config.ENV_LIBRARY_PATH, config.ENV_LD_LIBRARY_PATH, config.ENV_DAAL_MODE, config.ENV_EXECUTOR_VCORE)
         #classpath += " --conf spark.executor.extraJavaOptions=\"-Djava.library.path=%s:%s:%s:%s\" " % (config.ENV_DAALROOT, config.ENV_CPATH, config.ENV_LIBRARY_PATH, config.ENV_LD_LIBRARY_PATH)
         classpath = classpath + "--conf spark.executor.fpga.type=MCP --conf spark.executor.fpga.ip=60d65a0f-db0d-4390-ba94-67390d25gghh:1 "

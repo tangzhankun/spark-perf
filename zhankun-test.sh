@@ -1,20 +1,18 @@
 #!/bin/bash
+date
 declare program="./bin/run"
-declare total_executor_vcore=24
-declare total_executor_mem=180
-export SPARKPERF_DRIVER_MEM="64g"
+declare total_executor_vcore=22
+declare total_executor_mem=160
+export SPARKPERF_DRIVER_MEM="60g"
 source /home/lab/spark-DAAL/DAAL_setup.sh
-declare -a a_SPARK_HOME=("/home/lab/spark-DAAL/spark-daal-dist/spark-1.6.3-bin-custom-spark" "/home/lab/spark-DAAL/spark-original/spark-1.6.3-bin-spark-vanilla")
-#declare -a a_SPARKPERF_M=("4096" "8192" "8192" "8192" "4096")
-#declare -a a_SPARKPERF_K=("10240" "10240" "16384" "65536" "32768")
-#declare -a a_SPARKPERF_N=("10240" "10240" "16384" "16384" "32768")
-#declare -a a_SPARKPERF_BLOCK_SIZE=("2048" "4096" "8192")
-declare -a a_SPARKPERF_M=("4096" "8192" "8192")
-declare -a a_SPARKPERF_K=("10240" "10240" "16384")
-declare -a a_SPARKPERF_N=("10240" "10240" "16384")
-declare -a a_SPARKPERF_BLOCK_SIZE=("4096")
-declare -a a_ENV_EXECUTOR_NUM=("3")
-declare -a a_ENV_DAAL_MODE=("0" "1" "2")
+#declare -a a_SPARK_HOME=("/home/lab/spark-DAAL/spark-daal-dist/spark-1.6.3-bin-custom-spark" "/home/lab/spark-DAAL/spark-original-openblas/spark-1.6.3-bin-spark-vanilla-openblas")
+declare -a a_SPARK_HOME=("/home/lab/spark-DAAL/spark-original-openblas/spark-1.6.3-bin-spark-vanilla-openblas")
+declare -a a_SPARKPERF_M=("128" "256" "320" "640" "1024" "2048")
+declare -a a_SPARKPERF_K=("512" "1024" "2048" "4096" "10240" "20480")
+declare -a a_SPARKPERF_N=("512" "1024" "2048" "4096" "10240" "20480")
+declare -a a_SPARKPERF_BLOCK_SIZE=("1024" "2048" "4096")
+declare -a a_ENV_EXECUTOR_NUM=("1" "2" "4")
+declare -a a_ENV_DAAL_MODE=("0")
 
 echo "0: cpu only, 1: fpga balanced, 2: fpga maximum"
 
@@ -35,12 +33,11 @@ do
   export SPARKPERF_K=${a_SPARKPERF_K[$p-1]}
   export SPARKPERF_N=${a_SPARKPERF_N[$p-1]}
   let executor_memory="total_executor_mem/SPARKPERF_EXECUTOR_NUM"
-  #let executor_memory=58
   executor_memory+="g"
   let executor_vcore="total_executor_vcore/SPARKPERF_EXECUTOR_NUM"
   export SPARKPERF_EXECUTOR_MEM=$executor_memory
   export SPARKPERF_EXECUTOR_VCORE=$executor_vcore
-  let executor_partition="SPARKPERF_EXECUTOR_VCORE*SPARKPERF_EXECUTOR_VCORE*4"
+  let executor_partition="SPARKPERF_EXECUTOR_NUM*SPARKPERF_EXECUTOR_NUM*4"
   export SPARKPERF_EXECUTOR_PARTITION=$executor_partition
   echo "----------M: $SPARKPERF_M"
   echo "----------K: $SPARKPERF_K"
@@ -58,7 +55,8 @@ done
 }
 
 trap "trap_ctrlc" 2
-export spark_version="daal"
+#export spark_version="daal"
+export spark_version="vanilla"
 for i in "${a_SPARK_HOME[@]}"
 do
    export SPARKPERF_SPARKHOME=$i
@@ -86,4 +84,4 @@ done
 #parse result
 cd zhankun_results
 grep "^Time:" ./* > res.log
-
+date

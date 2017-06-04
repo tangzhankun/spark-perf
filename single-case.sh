@@ -1,14 +1,17 @@
 #!/bin/bash
+date
 declare program="./bin/run"
-declare total_vcore=24
-declare total_mem=120
+declare total_executor_vcore=22
+declare total_executor_mem=160
 export SPARKPERF_DRIVER_MEM="60g"
 source /home/lab/spark-DAAL/DAAL_setup.sh
-declare -a a_SPARK_HOME=("/home/lab/spark-DAAL/spark-daal-dist/spark-1.6.3-bin-custom-spark")
-declare -a a_SPARKPERF_M=("8192")
-declare -a a_SPARKPERF_K=("32768")
-declare -a a_SPARKPERF_N=("32768")
-declare -a a_SPARKPERF_BLOCK_SIZE=("8192")
+#declare -a a_SPARK_HOME=("/home/lab/spark-DAAL/spark-daal-dist/spark-1.6.3-bin-custom-spark")
+#declare -a a_SPARK_HOME=("/home/lab/spark-DAAL/spark-original-jvm/spark-1.6.3-bin-spark-vanilla-jvm" "/home/lab/spark-DAAL/spark-daal-dist/spark-1.6.3-bin-custom-spark" "/home/lab/spark-DAAL/spark-original-openblas/spark-1.6.3-bin-spark-vanilla-openblas")
+declare -a a_SPARK_HOME=("/home/lab/spark-DAAL/spark-original-openblas/spark-1.6.3-bin-spark-vanilla-openblas")
+declare -a a_SPARKPERF_M=("512")
+declare -a a_SPARKPERF_K=("1024")
+declare -a a_SPARKPERF_N=("1024")
+declare -a a_SPARKPERF_BLOCK_SIZE=("512")
 declare -a a_ENV_EXECUTOR_NUM=("1")
 declare -a a_ENV_DAAL_MODE=("0")
 
@@ -30,18 +33,21 @@ do
   export SPARKPERF_M=${a_SPARKPERF_M[$p-1]}
   export SPARKPERF_K=${a_SPARKPERF_K[$p-1]}
   export SPARKPERF_N=${a_SPARKPERF_N[$p-1]}
-  let executor_memory="total_mem/SPARKPERF_EXECUTOR_NUM"
+  let executor_memory="total_executor_mem/SPARKPERF_EXECUTOR_NUM"
   executor_memory+="g"
-  let executor_vcore="total_vcore/SPARKPERF_EXECUTOR_NUM"
+  let executor_vcore="total_executor_vcore/SPARKPERF_EXECUTOR_NUM"
   export SPARKPERF_EXECUTOR_MEM=$executor_memory
   export SPARKPERF_EXECUTOR_VCORE=$executor_vcore
+  let executor_partition="total_executor_vcore*total_executor_vcore*4"
+  export SPARKPERF_EXECUTOR_PARTITION=4
   echo "----------M: $SPARKPERF_M"
   echo "----------K: $SPARKPERF_K"
   echo "----------N: $SPARKPERF_N"
   echo "----------EXECUTOR_MEM: $SPARKPERF_EXECUTOR_MEM"
   echo "----------EXECUTOR_VCORE: $SPARKPERF_EXECUTOR_VCORE"
+  echo "----------EXECUTOR_PARTITION: $SPARKPERF_EXECUTOR_PARTITION"
   declare timestamp=`date +%s`
-  declare prefix="zhankun_results/$spark_version-MODE-$DAAL_MODE-EXECUTOR_NUM-$SPARKPERF_EXECUTOR_NUM-B_SIZE-$SPARKPERF_BLOCK_SIZE-M-$SPARKPERF_M-K-$SPARKPERF_K-N-$SPARKPERF_N-EXECUTOR_MEM-$SPARKPERF_EXECUTOR_MEM-EXECUTOR_VCORE-$SPARKPERF_EXECUTOR_VCORE-"
+  declare prefix="zhankun_results/$spark_version-MODE-$DAAL_MODE-EXECUTOR_NUM-$SPARKPERF_EXECUTOR_NUM-B_SIZE-$SPARKPERF_BLOCK_SIZE-M-$SPARKPERF_M-K-$SPARKPERF_K-N-$SPARKPERF_N-EXECUTOR_MEM-$SPARKPERF_EXECUTOR_MEM-EXECUTOR_VCORE-$SPARKPERF_EXECUTOR_VCORE-EXECUTOR_PARTITION-$SPARKPERF_EXECUTOR_PARTITION-"
   declare filename=$prefix$timestamp
   touch $filename
   $program > "$filename" 2>&1
@@ -75,5 +81,7 @@ do
    a_ENV_DAAL_MODE=("0")
    export spark_version="vanilla"
 done
-
-
+#parse result
+cd zhankun_results
+grep "^Time:" ./* >> res.log
+date
