@@ -8,9 +8,9 @@ source /home/lab/spark-DAAL/DAAL_setup.sh
 #declare -a a_SPARK_HOME=("/home/lab/spark-DAAL/spark-daal-dist/spark-1.6.3-bin-custom-spark")
 #declare -a a_SPARK_HOME=("/home/lab/spark-DAAL/spark-original-jvm/spark-1.6.3-bin-spark-vanilla-jvm" "/home/lab/spark-DAAL/spark-daal-dist/spark-1.6.3-bin-custom-spark" "/home/lab/spark-DAAL/spark-original-openblas/spark-1.6.3-bin-spark-vanilla-openblas")
 declare -a a_SPARK_HOME=("/home/lab/spark-DAAL/spark-original-openblas/spark-1.6.3-bin-spark-vanilla-openblas")
-declare -a a_SPARKPERF_M=("128")
-declare -a a_SPARKPERF_K=("512")
-declare -a a_SPARKPERF_N=("512")
+declare -a a_SPARKPERF_M=("4096")
+declare -a a_SPARKPERF_K=("20480")
+declare -a a_SPARKPERF_N=("20480")
 declare -a a_SPARKPERF_BLOCK_SIZE=("4096")
 declare -a a_ENV_EXECUTOR_NUM=("4")
 declare -a a_ENV_DAAL_MODE=("0")
@@ -56,7 +56,8 @@ done
 }
 
 trap "trap_ctrlc" 2
-export spark_version="daal"
+#export spark_version="daal"
+export spark_version="vanilla"
 for i in "${a_SPARK_HOME[@]}"
 do
    export SPARKPERF_SPARKHOME=$i

@@ -6,11 +6,12 @@ declare total_executor_mem=160
 export SPARKPERF_DRIVER_MEM="60g"
 source /home/lab/spark-DAAL/DAAL_setup.sh
 declare -a a_SPARK_HOME=("/home/lab/spark-DAAL/spark-daal-dist/spark-1.6.3-bin-custom-spark" "/home/lab/spark-DAAL/spark-original-openblas/spark-1.6.3-bin-spark-vanilla-openblas")
-declare -a a_SPARKPERF_M=("128" "256" "320" "640" "1024" "2048")
-declare -a a_SPARKPERF_K=("512" "1024" "2048" "4096" "10240" "20480")
-declare -a a_SPARKPERF_N=("512" "1024" "2048" "4096" "10240" "20480")
-declare -a a_SPARKPERF_BLOCK_SIZE=("1024" "2048" "4096")
-declare -a a_ENV_EXECUTOR_NUM=("1" "2" "4")
+#indicate array length cases for block size greater than M
+declare -a a_SPARKPERF_M=(128 256 512 1024 2048 4096)
+declare -a a_SPARKPERF_K=(512 1024 4096 10240 20480 20480)
+declare -a a_SPARKPERF_N=(512 1024 4096 10240 20480 20480)
+declare -a a_SPARKPERF_BLOCK_SIZE=(128 256 512 1024 2048 4096)
+declare -a a_ENV_EXECUTOR_NUM=(1 2 4)
 declare -a a_ENV_DAAL_MODE=("0")
 
 echo "0: cpu only, 1: fpga balanced, 2: fpga maximum"
@@ -31,6 +32,11 @@ do
   export SPARKPERF_M=${a_SPARKPERF_M[$p-1]}
   export SPARKPERF_K=${a_SPARKPERF_K[$p-1]}
   export SPARKPERF_N=${a_SPARKPERF_N[$p-1]}
+  #if M is small than block size, skip
+  if [ "$SPARKPERF_BLOCK_SIZE" -gt "$SPARKPERF_M" ]
+  then
+    continue
+  fi
   let executor_memory="total_executor_mem/SPARKPERF_EXECUTOR_NUM"
   executor_memory+="g"
   let executor_vcore="total_executor_vcore/SPARKPERF_EXECUTOR_NUM"

@@ -28,8 +28,6 @@ for line in ss:
         daal_vanilla_result_log_dict[daal_vanilla_result_log] = compute_average
     except: 
         pass
-for k, v in daal_vanilla_result_log_dict.iteritems():
-    print("%s:%s" % (k, v))
 #open res.log from zhankun-test.sh and add gemm timestamp
 f = open('./final.data', 'w')
 lines = [line.rstrip('\n') for line in open('./zhankun_results/res.log')]
