@@ -1,13 +1,12 @@
 #!/bin/bash
-date
+rm zhankun_results/*
 declare program="./bin/run"
-declare total_executor_vcore=22
+declare total_executor_vcore=16
 declare total_executor_mem=160
 export SPARKPERF_DRIVER_MEM="60g"
 source /home/lab/spark-DAAL/DAAL_setup.sh
+declare -a a_SPARK_HOME=("/home/lab/spark-DAAL/spark-original-openblas/spark-1.6.3-bin-spark-vanilla-openblas" "/home/lab/spark-DAAL/spark-daal-dist/spark-1.6.3-bin-custom-spark") 
 #declare -a a_SPARK_HOME=("/home/lab/spark-DAAL/spark-daal-dist/spark-1.6.3-bin-custom-spark")
-#declare -a a_SPARK_HOME=("/home/lab/spark-DAAL/spark-original-jvm/spark-1.6.3-bin-spark-vanilla-jvm" "/home/lab/spark-DAAL/spark-daal-dist/spark-1.6.3-bin-custom-spark" "/home/lab/spark-DAAL/spark-original-openblas/spark-1.6.3-bin-spark-vanilla-openblas")
-declare -a a_SPARK_HOME=("/home/lab/spark-DAAL/spark-original-openblas/spark-1.6.3-bin-spark-vanilla-openblas")
 declare -a a_SPARKPERF_M=("1024")
 declare -a a_SPARKPERF_K=("10240")
 declare -a a_SPARKPERF_N=("10240")
@@ -45,7 +44,7 @@ do
   echo "----------N: $SPARKPERF_N"
   echo "----------EXECUTOR_MEM: $SPARKPERF_EXECUTOR_MEM"
   echo "----------EXECUTOR_VCORE: $SPARKPERF_EXECUTOR_VCORE"
-  echo "----------EXECUTOR_PARTITION: $SPARKPERF_EXECUTOR_PARTITION"
+  echo "----------EXECUTOR_PARTITION:sqrt( $SPARKPERF_EXECUTOR_PARTITION )"
   declare timestamp=`date +%s`
   declare prefix="zhankun_results/$spark_version-MODE-$DAAL_MODE-EXECUTOR_NUM-$SPARKPERF_EXECUTOR_NUM-B_SIZE-$SPARKPERF_BLOCK_SIZE-M-$SPARKPERF_M-K-$SPARKPERF_K-N-$SPARKPERF_N-EXECUTOR_MEM-$SPARKPERF_EXECUTOR_MEM-EXECUTOR_VCORE-$SPARKPERF_EXECUTOR_VCORE-EXECUTOR_PARTITION-$SPARKPERF_EXECUTOR_PARTITION-"
   declare filename=$prefix$timestamp
@@ -56,7 +55,6 @@ done
 }
 
 trap "trap_ctrlc" 2
-#export spark_version="daal"
 export spark_version="vanilla"
 for i in "${a_SPARK_HOME[@]}"
 do
@@ -65,7 +63,7 @@ do
    for j in "${a_ENV_DAAL_MODE[@]}"
    do
       export DAAL_MODE=$j 
-      echo "----DAAL_MODE: $DAAL_MODE"
+      echo "----MODE: $DAAL_MODE"
       for z in "${a_ENV_EXECUTOR_NUM[@]}"
       do
          export SPARKPERF_EXECUTOR_NUM=$z
@@ -79,10 +77,10 @@ do
       done
    done
    #spark-daal test is done, vanilla don't need to set DAAL_MODE
-   a_ENV_DAAL_MODE=("0")
-   export spark_version="vanilla"
+   a_ENV_DAAL_MODE=("1")
+   export spark_version="daal"
 done
 #parse result
 cd zhankun_results
-grep "^Time:" ./* >> res.log
-date
+grep "^Time:" ./* > res.log
+cat res.log

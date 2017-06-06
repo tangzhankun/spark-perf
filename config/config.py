@@ -111,7 +111,7 @@ RUN_PYTHON_MLLIB_TESTS = False
 PREP_SPARK_TESTS = False
 PREP_PYSPARK_TESTS = False
 PREP_STREAMING_TESTS = False
-PREP_MLLIB_TESTS = True
+PREP_MLLIB_TESTS = False
 
 # Whether to warm up local disks (warm-up is only necesary on EC2).
 DISK_WARMUP = False
