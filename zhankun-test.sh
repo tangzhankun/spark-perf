@@ -11,7 +11,7 @@ declare -a a_SPARKPERF_M=(128 256 512 1024 2048 4096)
 declare -a a_SPARKPERF_K=(512 1024 4096 10240 20480 20480)
 declare -a a_SPARKPERF_N=(512 1024 4096 10240 20480 20480)
 declare -a a_SPARKPERF_BLOCK_SIZE=(128 256 512 1024 2048 4096)
-declare -a a_ENV_EXECUTOR_NUM=(1 2 4)
+declare -a a_ENV_EXECUTOR_NUM=(2 4 8 16)
 declare -a a_ENV_DAAL_MODE=("0")
 
 echo "0: cpu only, 1: fpga balanced, 2: fpga maximum"

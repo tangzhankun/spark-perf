@@ -15,7 +15,7 @@ class indicator:
     def getTotalTime(self):
         return self.totalTime
 
-
+summary = dict()
 asdf = dict()
 for line in fileinput.input():
     total = 0
@@ -24,16 +24,26 @@ for line in fileinput.input():
     TID = items[1]
     ms = items[5]
     mode = items[3]
+    try:
+        containerid = items[13]
+    except IndexError:
+        containerid = "cntid"
     if TID not in asdf:
         asdf[TID] = indicator(total, operations)
     value = asdf[TID]
     value.increaseTime(ms)
     value.increaseCount()
+    summary[containerid] = asdf
 
-totalaverage = 0
-i = 0
-for k, v in asdf.iteritems():
-    totalaverage += v.getTotalTime()/v.getCount()
-    i += 1
+containertotal = 0
+containercount = 0
+for k, v in summary.iteritems():
+    threadtotal = 0
+    threadcount = 0
+    for k1, v1 in v.iteritems():
+       threadtotal += v1.getTotalTime()/v1.getCount()
+       threadcount += 1
+    containertotal += threadtotal/threadcount
+    containercount += 1
     #print 'TID:%s, total GEMM:%s, elapseTime:%s, average:%s'%(k, v.getCount(), v.getTotalTime(), v.getTotalTime()/v.getCount())
-print "mode:%s:total_average:%s"%(mode, totalaverage/i)
+print "mode:%s:total_average:%s"%(mode, containertotal/containercount)
